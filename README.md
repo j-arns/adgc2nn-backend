@@ -34,15 +34,15 @@ The backend exposes RESTful endpoints consumed by a **Next.js** frontend via **S
 1. **Clone the repository:**
 
    ```bash
-   git clone [https://github.com/your-org/vapor-pressure-backend.git](https://github.com/your-org/vapor-pressure-backend.git)
-   cd vapor-pressure-backend
+   git clone https://github.com/your-org/adgc2nn-backend.git
+   cd adgc2nn-backend
    ```
 
 2. **Create virtual environment:**
 
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
 3. **Install dependencies:**
