@@ -95,7 +95,6 @@ async def batch_predict(request: Request):
         return response
     else:
             # Return JSON
-            # Fix: Convert numpy types to native python floats and map keys for frontend
             clean_results = []
             for res in results:
             
@@ -105,7 +104,7 @@ async def batch_predict(request: Request):
                     "predicted_vapor_pressure": float(res["prediction"]) if res.get("prediction") is not None else None,
                     "uncertainty": float(res["uncertainty"]) if res.get("uncertainty") is not None else None,
                     "model_version": res.get("model"),
-                    "error": res.get("error")  # <--- ADD THIS LINE
+                    "error": res.get("error") 
                 })
                 
             return clean_results
