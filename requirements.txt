@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic-settings
+pandas
+numpy
+rdkit
+torch
+torch-geometric
+sklearn

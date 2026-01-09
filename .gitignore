@@ -1,0 +1,47 @@
+# --- Python Core ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+.env
+
+# --- Environment Variables (CRITICAL) ---
+.env
+.env.local
+.env.*
+
+# --- Machine Learning Artifacts ---
+# Ignore large model weights to keep repo size down
+*.pth
+*.pt
+*.pickle
+*.pkl
+*.h5
+*.onnx
+model_checkpoints/
+saved_models/
+
+# --- Data ---
+data/
+*.csv
+*.tsv
+*.json
+!data/.gitkeep
+
+# --- Testing & Quality Assurance ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# --- IDE Settings ---
+.vscode/
+.idea/
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
