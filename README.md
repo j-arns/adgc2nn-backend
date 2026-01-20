@@ -54,7 +54,7 @@ The backend exposes RESTful endpoints consumed by a **Next.js** frontend via **S
 4. **Run the server (Development):**
 
    ```bash
-   uvicorn main:app --reload --port 3001
+   uvicorn app.main:app --reload --port 3001
    ```
 
 ## 📡 API Reference
