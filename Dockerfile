@@ -1,6 +1,6 @@
 # Use an official lightweight Python image.
-# 3.10 is a good balance of stability and modernity for PyTorch/RDKit.
-FROM python:3.10-slim
+# 3.12 matches the user's local environment
+FROM python:3.12-slim
 
 # Prevent Python from writing pyc files to disc
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -31,6 +31,16 @@ COPY . .
 
 # Expose the port the app runs on
 EXPOSE 3001
+
+# Create a non-root user to run the application
+# This is a critical security best practice to limit the impact of potential vulnerabilities
+RUN addgroup --system appgroup && adduser --system --group appuser
+
+# Change ownership of the application directory to the non-root user
+RUN chown -R appuser:appgroup /code
+
+# Switch to the non-root user
+USER appuser
 
 # Command to run the application
 # We use 0.0.0.0 to make it accessible outside the container
