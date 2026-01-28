@@ -34,18 +34,50 @@ The project adheres to a service-oriented architecture, decoupling the API inter
 
 ## 3. Directory Structure & Key Components
 
-### Root Directory
-*   **`main.py`**: Application entry point. Configures the FastAPI instance, CORS middleware, and mounts routers.
-*   **`Dockerfile` / `docker-compose.yml`**: Defines the container environment, exposing port **3001**.
-*   **`requirements.txt`**: Strict dependency pinning, including `torch-geometric`, `rdkit`, and `fastapi`.
+Below is a hierarchical view of the project files with a brief description of their purpose.
 
-### `app/services/` (Core Logic)
-This directory contains the business logic and ML artifacts.
+```text
+adgc2nn-api/
+├── .dockerignore                 # Files to exclude from Docker builds (reduces image size).
+├── Dockerfile                    # Blueprint for building the backend container image.
+├── docker-compose.yml            # Defines services (backend, frontend, nginx) for LOCAL development.
+├── docker-compose.prod.yml       # Defines services for PRODUCTION (adds Certbot & HTTPS).
+├── init-letsencrypt.sh           # Helper script to request initial SSL certificates from Let's Encrypt.
+├── requirements.txt              # List of Python dependencies (FastAPI, PyTorch, RDKit, etc.).
+├── README.md                     # General project overview.
+├── LICENSE                       # Project license.
+│
+├── app/                          # Main Application Source Code
+│   ├── main.py                   # App Entry Point. Initializes FastAPI.
+│   │
+│   ├── api/v1/                   # API Route definitions
+│   │   ├── router.py             # Central router that groups all endpoints.
+│   │   └── endpoints/
+│   │       └── prediction.py     # Defines logic for /predict and /batch_predict endpoints.
+│   │
+│   ├── core/
+│   │   └── config.py             # Global settings (Environment variables, versioning).
+│   │
+│   ├── schemas/
+│   │   └── prediction.py         # Pydantic models (Data validation for Requests/Responses).
+│   │
+│   └── services/                 # Business Logic & ML Engine
+│       ├── engine.py             # Singleton Engine. Loads models and orchestrates predictions.
+│       ├── application_functions.py  # Core ML Logic. Graph conversion & PyTorch model class.
+│       ├── confined_model_weights.pth  # Trained weights for the C/H/O model.
+│       ├── broad_model_weights.pth     # Trained weights for the Heteroatom model.
+│       ├── conf_normalizer.pickle      # Scaler to convert Confined model output to Pascals.
+│       └── broad_normalizer.pickle     # Scaler to convert Broad model output to Pascals.
+│
+├── nginx/                        # Nginx Configuration
+│   ├── nginx.conf                # Main Nginx global settings (logging, mime types).
+│   ├── app.local.conf            # Config for LOCALHOST (HTTP only).
+│   └── conf.d/
+│       └── app.conf              # Config for PRODUCTION (HTTP -> HTTPS redirect, SSL).
+│
+└── certbot/                      # Shared volume for SSL certificates (created at runtime).
+```
 
-#### `engine.py` (Orchestrator)
-The `AdGC2NNEngine` class implements the Singleton pattern to load model weights (`.pth`) and scalers (`.pickle`) into memory at startup. It exposes two main methods:
-*   `predict_single(smiles: str)`: Low-latency prediction for distinct lookups.
-*   `predict_batch(smiles_list: List[str])`: Optimized batch processing. It separates inputs into "Confined" and "Broad" batches, processes them in vectorized operations, and recombines the results to maintain input order.
 
 #### `application_functions.py` (Data Pipeline & Model Definition)
 
