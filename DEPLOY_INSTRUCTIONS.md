@@ -78,3 +78,19 @@ Certbot is configured to **automatically renew** your certificates. You don't ne
 | **"Bad Gateway (502)"** | Is the Frontend container running? (`docker ps`) |
 | **"Connection Refused"** | Is the Backend running? Did Nginx fail to start? |
 | **"Not Secure" in Browser** | Did `init-letsencrypt.sh` run successfully? Is port 443 open? |
+| **"Address already in use"** | Port 80 occupied? See "Port Conflicts" below. |
+
+### Port Conflicts
+If you see `bind: address already in use`, another web server is likely running (e.g., Apache).
+**Fix:**
+```bash
+# 1. Check what's using port 80
+sudo lsof -i :80
+
+# 2. Stop and disable the conflicting service (Example for Apache)
+sudo systemctl stop apache2
+sudo systemctl disable apache2
+
+# 3. Retry deployment
+./init-letsencrypt.sh
+```

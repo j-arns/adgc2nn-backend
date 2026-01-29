@@ -50,30 +50,51 @@ class AdGC2NNEngine:
         pickle_conf = os.path.join(base_path, 'conf_normalizer.pickle')
         pickle_broad = os.path.join(base_path, 'broad_normalizer.pickle')
 
+        print(f"Loading resources from: {base_path}")
+
+        # 1. Load Confined Model
         try:
-            # 1. Load Confined Model
             self.conf_model = application_functions.AdaptiveGC2NN()
             self.conf_model.load_state_dict(torch.load(weights_conf, map_location=torch.device('cpu')))
             self.conf_model.eval()
+            print("✅ Confined Model loaded.")
+        except Exception as e:
+            raise RuntimeError(f"Failed to load Confined Model from {weights_conf}: {e}")
 
-            # 2. Load Broad Model
+        # 2. Load Broad Model
+        try:
             self.broad_model = application_functions.AdaptiveGC2NN(nodes_features=47, additional_input_size=43)
             self.broad_model.load_state_dict(torch.load(weights_broad, map_location=torch.device('cpu')))
             self.broad_model.eval()
+            print("✅ Broad Model loaded.")
+        except Exception as e:
+            raise RuntimeError(f"Failed to load Broad Model from {weights_broad}: {e}")
 
-            # 3. Load Normalizers
+        # 3. Load Normalizers with sklearn compatibility patch
+        try:
+            # Patch for older sklearn versions if needed
+            import sklearn.preprocessing
+            import sys
+            if 'sklearn.preprocessing.data' not in sys.modules:
+                sys.modules['sklearn.preprocessing.data'] = sklearn.preprocessing
+
             with open(pickle_conf, "rb") as f:
                 self.conf_normalizer = pickle.load(f)
+            print("✅ Confined Normalizer loaded.")
+
             with open(pickle_broad, "rb") as f:
                 self.broad_normalizer = pickle.load(f)
-
-            print("✅ adGC2NN Models and Normalizers loaded successfully.")
-
-        except FileNotFoundError as e:
-            print(f"❌ Error loading model files: {e}")
-            print("Please ensure .pth and .pickle files are in 'backend/app/services/'")
+            print("✅ Broad Normalizer loaded.")
+            
+        except ModuleNotFoundError as e:
+            raise RuntimeError(f"Missing dependency for unpickling normalizers: {e}. Ensure scikit-learn is installed.")
         except Exception as e:
-            print(f"❌ Unexpected error initializing engine: {e}")
+            # Common error with sklearn version mismatch
+            if "No module named" in str(e):
+                raise RuntimeError(f"scikit-learn version mismatch or missing module during unpickling: {e}")
+            raise RuntimeError(f"Failed to load Normalizers: {e}")
+
+        print("✅ All adGC2NN resources ready.")
 
     def predict_single(self, smiles: str) -> Tuple[Optional[float], str, Optional[str]]:
         """
