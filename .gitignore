@@ -16,9 +16,9 @@ env/
 
 # --- Machine Learning Artifacts ---
 # Ignore large model weights to keep repo size down
-*.pth
+
 *.pt
-*.pickle
+
 *.pkl
 *.h5
 *.onnx
