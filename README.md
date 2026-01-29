@@ -19,8 +19,51 @@ The backend exposes RESTful endpoints consumed by a **Next.js** frontend via **S
 
 1. **`/predict`**: Optimized for single-item, real-time inference with low latency.
 2. **`/batch_predict`**: A **polymorphic endpoint** that handles:
-   * `application/json`: For small batches (e.g., pasting lists into the UI).
-   * `multipart/form-data`: For large CSV/TXT file uploads, returning a streamed CSV response.
+    * `multipart/form-data`: For large CSV/TXT file uploads, returning a streamed CSV response.
+
+## 📂 Directory Structure
+
+```text
+adgc2nn-api/
+├── .dockerignore                 # Files to exclude from Docker builds.
+├── Dockerfile                    # Blueprint for building the backend container image.
+├── docker-compose.yml            # Services for LOCAL development.
+├── docker-compose.prod.yml       # Services for PRODUCTION (adds HTTPS).
+├── init-letsencrypt.sh           # Helper script for SSL certificates.
+├── requirements.txt              # List of Python dependencies.
+├── README.md                     # General project overview.
+├── LICENSE                       # Project license.
+│
+├── app/                          # Main Application Source Code
+│   ├── main.py                   # App Entry Point.
+│   │
+│   ├── api/v1/                   # API Route definitions
+│   │   ├── router.py             # Central router.
+│   │   └── endpoints/
+│   │       └── prediction.py     # Logic for /predict and /batch_predict.
+│   │
+│   ├── core/
+│   │   └── config.py             # Global settings.
+│   │
+│   ├── schemas/
+│   │   └── prediction.py         # Pydantic models (Data validation).
+│   │
+│   └── services/                 # Business Logic & ML Engine
+│       ├── engine.py             # Orchestrates predictions.
+│       ├── application_functions.py  # Core ML Logic & Graph conversion.
+│       ├── confined_model_weights.pth  # Model weights (C/H/O).
+│       ├── broad_model_weights.pth     # Model weights (Heteroatoms).
+│       ├── conf_normalizer.pickle      # Output Scaler (Confined).
+│       └── broad_normalizer.pickle     # Output Scaler (Broad).
+│
+├── nginx/                        # Nginx Configuration
+│   ├── nginx.conf                # Main Nginx global settings.
+│   ├── app.local.conf            # Config for LOCALHOST.
+│   └── conf.d/
+│       └── app.conf              # Config for PRODUCTION (HTTPS).
+│
+└── certbot/                      # Shared volume for SSL certificates.
+```
 
 ## 🚀 Getting Started
 
