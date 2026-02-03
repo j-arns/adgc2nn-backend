@@ -10,7 +10,7 @@ else
   COMPOSE="docker-compose -f docker-compose.prod.yml"
 fi
 
-domains=(multiphasekinetics.de www.multiphasekinetics.de)
+domains=(multiphasekinetics.de www.multiphasekinetics.de multiphasekinetics.com www.multiphasekinetics.com multiphasekinetics.org www.multiphasekinetics.org)
 rsa_key_size=4096
 data_path="./certbot"
 email="t.berkenmeier@mpic.de" # Adding a valid address is strongly recommended
